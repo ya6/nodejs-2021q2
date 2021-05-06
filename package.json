@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-2021q2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": "https://github.com/ya6/nodejs-2021q2.git",
+  "author": "YA <vector_cp@mail.ru>",
+  "license": "MIT",
+  "dependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
