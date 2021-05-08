@@ -1,4 +1,4 @@
-import fs from "fs"
+import * as fs from "fs"
 import path from "path"
 import { URL } from "url"
 import chalk from "chalk"
@@ -40,7 +40,8 @@ const encodeCaesar = (data = "", shift) => {
     } else return el
   })
 
-  console.log("encodeCaesar", encodedArray.join(""), shift)
+  // console.log("encodeCaesar", encodedArray.join(""), shift)
+  return encodedArray.join("")
 }
 
 //-----
@@ -51,7 +52,22 @@ fs.readFile(args.inputFile, "utf8", (err, data) => {
     process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't read source file ${args.inputFile}`)
     process.exit()
   }
-  encodeCaesar(data, args.shift)
+  const encString = encodeCaesar(data, args.shift)
+
+  if (args.outputFile) {
+    fs.writeFile(args.outputFile, encString, (err) => {
+      if (err){
+        process.exitCode = 1
+        process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't write to file ${args.outputFile}`)
+        process.exit()
+      }
+      process.stdout.write(chalk.greenBright.inverse(` Success `)+` ${args.outputFile} saved`)
+    });
+    
+  } else   process.stdout.write(chalk.greenBright.inverse(`Encoded Output `)+` ${encString}`)
+  
+  
+
 })
 
 // console.log(rawArgs);
