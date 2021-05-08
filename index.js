@@ -55,16 +55,26 @@ fs.readFile(args.inputFile, "utf8", (err, data) => {
   const encString = encodeCaesar(data, args.shift)
 
   if (args.outputFile) {
-    fs.writeFile(args.outputFile, encString, (err) => {
-      if (err){
+
+    fs.access(args.outputFile, function(error){
+      if (error) {
         process.exitCode = 1
-        process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't write to file ${args.outputFile}`)
+        process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't find file ${args.outputFile}`)
         process.exit()
+      } else {
+        fs.appendFile(args.outputFile, encString, (err) => {
+          if (err){
+            process.exitCode = 1
+            process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't write to file ${args.outputFile}`)
+            process.exit()
+          }
+          process.stdout.write(chalk.greenBright.inverse(` Success `)+` ${args.outputFile} saved`)
+        });
       }
-      process.stdout.write(chalk.greenBright.inverse(` Success `)+` ${args.outputFile} saved`)
-    });
+  });
+
     
-  } else   process.stdout.write(chalk.greenBright.inverse(`Encoded Output `)+` ${encString}`)
+  } else   process.stdout.write(chalk.greenBright.inverse(` Encoded Output `)+` ${encString}`)
   
   
 
