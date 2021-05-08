@@ -1,16 +1,21 @@
 import fs from "fs"
 import path from "path"
 import { URL } from "url"
+import chalk from "chalk"
 
 import handleData from "./handleData.js"
+
+
 const rawArgs = process.argv
 const args = handleData(rawArgs)
 console.log(args)
 
+
+//check for args
 if (!args.action || !args.shift) {
   process.exitCode = 1
-  process.stderr.write(
-    `Has no ${args.action ? "" : "action"}${
+  process.stderr.write(chalk.magentaBright.inverse(` Error `)+
+    ` Has no ${args.action ? "" : "action"}${
       !args.action && !args.shift ? "," : ""
     } ${args.shift ? "" : "shift"} argument`
   )
@@ -19,26 +24,33 @@ if (!args.action || !args.shift) {
 
 //funcs
 const encodeCaesar = (data = "", shift) => {
-  const LETTERS = 26
   const inputArray = data.split("")
   const encodedArray = inputArray.map((el) => {
     if (el.charCodeAt(0) >= 97 && el.charCodeAt(0) <= 122) {
-      return  String.fromCharCode(((el.charCodeAt(0)+shift) % 123) % 97 + 97)
+      return String.fromCharCode(
+        (((el.charCodeAt(0) + shift) % 123) % 97) + 97
+      )
     } else if (
       el.charCodeAt(0) >= 65 &&
       el.charCodeAt(0) <= 90
     ) {
-      return  String.fromCharCode(((el.charCodeAt(0)+shift) % 91) % 65 + 65)
+      return String.fromCharCode(
+        (((el.charCodeAt(0) + shift) % 91) % 65) + 65
+      )
     } else return el
   })
 
-  console.log("encodeCaesar", encodedArray, shift)
+  console.log("encodeCaesar", encodedArray.join(""), shift)
 }
 
 //-----
 
-fs.readFile("./input.txt", "utf8", (err, data) => {
-  if (err) throw err
+fs.readFile(args.inputFile, "utf8", (err, data) => {
+  if (err) {
+    process.exitCode = 1
+    process.stderr.write(chalk.magentaBright.inverse(` Error `)+` Can't read source file ${args.inputFile}`)
+    process.exit()
+  }
   encodeCaesar(data, args.shift)
 })
 
