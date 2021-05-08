@@ -1,17 +1,31 @@
-const args = process.argv 
+import fs from "fs"
+import path from "path"
+import { URL } from 'url';
+
+import handleData from "./handleData.js"
+const rawArgs = process.argv 
+const args = handleData(rawArgs)
 console.log(args);
 
-const data = {
-    actionFlag:  args.includes("---action") || args.includes("-a"),
-    action:  (args.includes("encode") &&  "encode" ||  args.includes("decode") &&  "decode"),
-    shiftFlag:  args.includes("--shift") || args.includes("-s"),
-    shift:  +args.filter((arg)=> (!isNaN(arg)))[0] || false, // )
-    inputFlag:  args.includes("--input") || args.includes("-i"),
-    inputFile: args.includes("--input") && args[args.indexOf("--input")+1] || args.includes("-i")  && args[args.indexOf("-i")+1] || false,
-    outputFlag:  args.includes("--output") || args.includes("-o"),
-    outputFile: args.includes("--output") && args[args.indexOf("--output")+1] || args.includes("-o")  && args[args.indexOf("-o")+1] || false,
-    
-
+if (!args.action || !args.shift) {
+  process.exitCode = 1;
+  process.stderr.write(`Has no ${args.action ? "" : "action"}${(!args.action && !args.shift) ? "," : ""} ${args.shift ? "" : "shift"} argument` )
+  process.exit()
 }
-console.log(data);
-console.log( +args.filter((arg)=> (!isNaN(arg)))[0]) 
+
+
+fs.readFile("./input.txt", 'utf8', (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
+
+
+// console.log(rawArgs);
+// process.on('exit', (code) => {
+  //   console.log(`About to exit with code: ${code}`);
+  // });
+  
+  // const __filename = new URL('', import.meta.url).pathname;
+  // // Will contain trailing slash
+  // const __dirname = new URL('.', import.meta.url).pathname;
+  // console.log('sss', __dirname);
