@@ -13,10 +13,24 @@ if (!args.action || !args.shift) {
   process.exit()
 }
 
+//funcs
+const encodeCaesar = (data = "", shift = 0) => {
+  const LETTERS = 26
+  const inputArray = data.split("")
+  const encodedArray = inputArray.map(el => {
+    return el.charCodeAt(0)
+  })
+  
+  
+  console.log('encodeCaesar', encodedArray, shift )
+}
+
+//-----
+
 
 fs.readFile("./input.txt", 'utf8', (err, data) => {
   if (err) throw err;
-  console.log(data);
+  encodeCaesar(data, args.shift)
 });
 
 
@@ -29,3 +43,8 @@ fs.readFile("./input.txt", 'utf8', (err, data) => {
   // // Will contain trailing slash
   // const __dirname = new URL('.', import.meta.url).pathname;
   // console.log('sss', __dirname);
+
+
+  // https://abakbot.ru/online-5/301-rus-eng-alphabet
+  
+  

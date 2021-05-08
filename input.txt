@@ -1,1 +1,1 @@
-text string
+abcdefghijklmnopqrstuvwxyz      ABCDEFGHIJKLMNOPQRSTUVWXYZ
