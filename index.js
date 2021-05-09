@@ -1,6 +1,7 @@
 import * as fs from "fs"
-import  { pipeline }  from "stream/promises"
+import { pipeline } from "stream/promises"
 import chalk from "chalk"
+import {promisify} from "util"
 
 import handleData from "./handleData.js"
 import encodeCaesar from "./encodeCaesar.js"
@@ -15,94 +16,125 @@ if (!args.action || !args.shift) {
     chalk.magentaBright.inverse(` Error `) +
       ` Has no ${args.action ? "" : "action"}${
         !args.action && !args.shift ? "," : ""
-      } ${args.shift ? "" : "shift or shift = 0"} argument`
+      } ${args.shift ? "" : "shift or shift=0"} argument`
   )
   process.exit()
 }
 
-
-async function run() {
+const run = async (inputSource, outputSource) => {
+  console.log('run')
   await pipeline(
- 
-    true ? process.stdin : fs.createReadStream(args.inputFile),
-   
-     async function* (source) {
-      source.setEncoding('utf8');  
+    inputSource,
+    async function* (source) {
+      source.setEncoding("utf8")
       for await (const chunk of source) {
-        yield encodeCaesar(chunk, args.shift);
+        yield encodeCaesar(chunk, args.shift)
       }
     },
-    // async function (source) {
-    //   console.log('-->',source);
-    // }
-   
-  fs.createWriteStream(args.outputFile)
-  );
-  console.log('Pipeline succeeded.');
+    outputSource
+  )
+  process.stdout.write(
+    chalk.greenBright.inverse(` Success `) +
+      ` data processed`
+  )
 }
- run().catch(console.error);
+
+let inputSteam = null
+let outputStream = null
+
+const existPromise = promisify(fs.exists)
+
+// existPromise(args.outputFile ).then(console.log).then(()=>existPromise(args.inputFile)).then(console.log)
+
+existPromise(args.inputFile)
+  .then((exist) => {
+    if (exist) {
+      inputSteam = fs.createReadStream(args.inputFile)
+    } else inputSteam = process.stdin
+  })
+  .then(() => existPromise(args.outputFile))
+  .then((exist) => {
+    console.log('args.outputFile -->', args.outputFile, exist)
+    if (exist) {
+      outputStream = fs.createWriteStream(args.outputFile)
+    } else outputStream = process.stdout
+  })
+
+  .then(() => run(inputSteam, outputStream))
 
 
-// async function run() {
-//   await pipeline(
-//     fs.createReadStream('input.txt'),
-//     fs.createWriteStream('out.txt')
-//   );
-//   console.log('Pipeline succeeded.');
-// }
-
-// run().catch(console.error);
 
 
-// //check for args
-// if (!args.action || !args.shift) {
-//   process.exitCode = 1
-//   process.stderr.write(
-//     chalk.magentaBright.inverse(` Error `) +
-//       ` Has no ${args.action ? "" : "action"}${
-//         !args.action && !args.shift ? "," : ""
-//       } ${args.shift ? "" : "shift"} argument`
-//   )
-//   process.exit()
-// }
 
-// //funcs
 
-// //-----
 
-// fs.access(args.inputFile, function (error) {
-//   if (error) {
-//     // todo stdin functional
-//     process.stdout.write(
-//       chalk.greenBright.inverse(`Enter the data: `)
-//     )
+// if (!args.outputFile) {outputStream = process.stdout}
 
-//     process.stdin.setEncoding('utf8');
+// if (!args.inputFile) {inputSteam = process.stdin}
 
-//     process.stdin.on('readable', () => {
-//       var chunk = process.stdin.read();
-//       if (chunk !== null) {
-//         process.stdout.write(`data: ${chunk}`);
-//       }
-//     });
+// const checkFiles =  async () => {
   
-    // process.stdin.on('end', () => {
-    //   process.stdout.write('end');
-    // });
-
-
-   
-//   } else {
-//     fs.readFile(args.inputFile, "utf8", (err, data) => {
-//       if (err) {
+//   if (args.inputFile) {
+//   fs.stat(args.inputFile, (error) => {
+//       if (error) {
 //         process.exitCode = 1
 //         process.stderr.write(
 //           chalk.magentaBright.inverse(` Error `) +
-//             ` Can't read source from ${args.inputFile}`
+//           ` Can't find file ${args.inputFile}`
+//           )
+//           process.exit()
+//         } else {inputSteam = fs.createWriteStream(args.outputFile)}
+//   })
+//   }
+
+// }
+
+
+
+
+// console.log("args.outputFile", args.outputFile);
+// if (args.outputFile) {
+//   fs.stat(args.outputFile, (error) => {
+//     if (error) {
+//       process.exitCode = 1
+//       process.stderr.write(
+//         chalk.magentaBright.inverse(` Error `) +
+//         ` Can't find file ${args.outputFile}`
 //         )
 //         process.exit()
-//       }
-//       const encString = encodeCaesar(data, args.shift)
+//       } else {outputStream = fs.createWriteStream(args.outputFile)}
+//     })
+//   } else {outputStream = process.stdout}
+
+  
+//   console.log(" args.inputFile", args.inputFile);
+// if (args.inputFile) {
+//   console.log(" -----------------args.inputFile--------------", args.inputFile);
+//   fs.stat(args.inputFile, (error) => {
+//     if (error) {
+//       process.exitCode = 1
+//       process.stderr.write(
+//         chalk.magentaBright.inverse(` Error `) +
+//         ` Can't find file ${args.inputFile}`
+//         )
+//         process.exit()
+//       } else { console.log('else'); inputSteam = fs.createReadStream(args.inputFile)}
+//     })
+//   } else { console.log('else else')
+//   inputSteam = process.stdout}
+
+
+//   console.log("inp--------->",inputSteam,"out---------->", outputStream);
+
+
+
+
+  
+
+
+    
+
+
 
 //       if (args.outputFile) {
 //         fs.access(args.outputFile, function (error) {
