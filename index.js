@@ -44,7 +44,7 @@ const run = async (inputSource, outputSource, caesar) => {
 }
 
 const caesarFunc =
-  args.action.toLowerCase() === "encode"
+  args.action === "encode"
     ? encodeCaesar
     : decodeCaesar
 
