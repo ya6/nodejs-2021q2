@@ -9,7 +9,7 @@ import decodeCaesar from "./decodeCaesar.js"
 
 const rawArgs = process.argv
 const args = handleData(rawArgs)
-console.log(args)
+// console.log(args)
 
 
 if (!args.action || !args.shift) {
@@ -18,7 +18,7 @@ if (!args.action || !args.shift) {
     chalk.magentaBright.inverse(` Error `) +
       ` Has no ${args.action ? "" : "action"}${
         !args.action && !args.shift ? "," : ""
-      } ${args.shift ? "" : "shift or shift=0"} argument`
+      } ${args.shift ? "" : "shift or shift=0 or multiple of 26"} argument`
   )
   process.exit()
 }
