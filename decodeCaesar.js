@@ -19,7 +19,6 @@ const decodeCaesar = (data = "", shift) => {
       return String.fromCharCode(_elCode)
     } else return el
   })
-  // console.log("encodeCaesar", encodedArray.join(""), shift)
   return encodedArray.join("")
 }
 export default decodeCaesar

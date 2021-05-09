@@ -9,8 +9,7 @@ import decodeCaesar from "./decodeCaesar.js"
 
 const rawArgs = process.argv
 const args = handleData(rawArgs)
-// console.log(args)
-
+console.log(args)
 
 if (!args.action || !args.shift) {
   process.exitCode = 1
@@ -18,11 +17,14 @@ if (!args.action || !args.shift) {
     chalk.magentaBright.inverse(` Error `) +
       ` Has no ${args.action ? "" : "action"}${
         !args.action && !args.shift ? "," : ""
-      } ${args.shift ? "" : "shift or shift=0 or multiple of 26"} argument`
+      } ${
+        args.shift
+          ? ""
+          : "shift or shift=0 or multiple of 26"
+      } argument`
   )
   process.exit()
 }
-
 
 const run = async (inputSource, outputSource, caesar) => {
   await pipeline(
@@ -41,11 +43,13 @@ const run = async (inputSource, outputSource, caesar) => {
   )
 }
 
-const caesarFunc = args.action.toLowerCase() === "encode" ? encodeCaesar : decodeCaesar
+const caesarFunc =
+  args.action.toLowerCase() === "encode"
+    ? encodeCaesar
+    : decodeCaesar
 
 let inputSteam = null
 let outputStream = null
-
 
 const existPromise = promisify(fs.exists)
 
@@ -59,8 +63,12 @@ existPromise(args.inputFile)
   .then((exist) => {
     if (exist) {
       outputStream = fs.createWriteStream(args.outputFile, {
-        flag: "a",      
+        flag: "a",
       })
     } else outputStream = process.stdout
   })
-  .then(() => run(inputSteam, outputStream ,caesarFunc))
+  .then(() =>
+    run(inputSteam, outputStream, caesarFunc).catch((err) =>
+      console.log(err)
+    )
+  )

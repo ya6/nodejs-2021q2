@@ -14,7 +14,6 @@ const encodeCaesar =  (data = "", shift) => {
         )
       } else return el
     })
-   // console.log("encodeCaesar", encodedArray.join(""), shift)
     return encodedArray.join("")
   }
   export default encodeCaesar
